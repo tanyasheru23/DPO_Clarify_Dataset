@@ -36,6 +36,8 @@ ALL_KEYWORDS = {kw for words in TOPIC_KEYWORDS.values() for kw in words}
 
 
 def is_relevant(title: str) -> bool:
+    if not title:
+        return False
     title_lower = title.lower()
     return any(kw in title_lower for kw in ALL_KEYWORDS)
 

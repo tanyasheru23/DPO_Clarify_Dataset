@@ -1,45 +1,30 @@
 import re
 
-# Few key words to filter the dataset for our specific choice
-TOPIC_KEYWORDS = {
-    "math": [
-        "calculus",
-        "derivative",
-        "integral",
-        "algebra",
-        "matrix",
-        "probability",
-        "statistics",
-    ],
-    "cs": [
-        "algorithm",
-        "recursion",
-        "complexity",
-        "binary",
-        "graph",
-        "sorting",
-        "dynamic programming",
-    ],
-    "physics": ["force", "energy", "quantum", "velocity", "thermodynamics", "entropy"],
-    "ml": [
-        "gradient",
-        "neural",
-        "loss function",
-        "backprop",
-        "overfitting",
-        "embedding",
-    ],
-}
+ALLOWED_DOMAINS = [
+    "ai",
+    "biology",
+    "chemistry",
+    "cs",
+    "datascience",
+    "economics",
+    "softwareengineering",
+    "stats",
+    "physics"
+]
 
-# Flatten into one set
-ALL_KEYWORDS = {kw for words in TOPIC_KEYWORDS.values() for kw in words}
-
-
-def is_relevant(title: str) -> bool:
-    if not title:
-        return False
-    title_lower = title.lower()
-    return any(kw in title_lower for kw in ALL_KEYWORDS)
+def get_se_domain(metadata: str | list) -> str | None:
+    """Extract subdomain from SE URL e.g. 'math' from 'math.stackexchange.com'"""
+    try:
+        # metadata comes as a list of URLs, first one is the question URL
+        if isinstance(metadata, str):
+            import json
+            metadata = json.loads(metadata)
+        url = metadata[0]  # e.g. "https://math.stackexchange.com/questions/123"
+        # extract the part before .stackexchange
+        domain = url.split("//")[1].split(".stackexchange")[0]
+        return domain
+    except (IndexError, AttributeError):
+        return None
 
 
 def clean_html(text: str) -> str:
